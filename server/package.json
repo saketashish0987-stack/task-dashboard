@@ -1,0 +1,5 @@
+{
+  "name": "attendance-server",
+  "private": true,
+  "type": "module"
+}

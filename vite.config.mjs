@@ -12,6 +12,11 @@ export default defineConfig({
   ssr: {
     noExternal: ['@tailwindcss/vite']
   },
+  server: {
+    proxy: {
+      '/api': 'http://127.0.0.1:3001',
+    },
+  },
   test: {
     globals: true,
     environment: 'jsdom',

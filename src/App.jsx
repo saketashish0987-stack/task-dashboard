@@ -5,6 +5,8 @@ import { PlusIcon } from '@heroicons/react/24/outline';
 import { TaskProvider } from './context/TaskContext';
 import { TagProvider } from './context/TagContext';
 import { ListProvider } from './context/ListContext';
+import { AttendanceProvider } from './context/AttendanceContext';
+import AttendancePanel from './features/attendance/components/AttendancePanel';
 
 import GlobalTaskForm from './features/tasks/components/GlobalTaskForm';
 import TaskBoard from './features/lists/components/TaskBoard';
@@ -16,6 +18,7 @@ function App() {
     <TaskProvider>
       <TagProvider>
         <ListProvider>
+          <AttendanceProvider>
           <div className="App min-h-screen bg-gradient-to-br from-primary-50 to-secondary-50 flex flex-col items-center py-12 px-4" data-testid="app">
             <div className="w-full max-w-6xl">
               <motion.div 
@@ -57,10 +60,13 @@ function App() {
                 </AnimatePresence>
               </motion.div>
               
+              <AttendancePanel />
+
               {/* The TaskBoard component now manages all task lists */}
               <TaskBoard />
             </div>
           </div>
+          </AttendanceProvider>
         </ListProvider>
       </TagProvider>
     </TaskProvider>

@@ -13,6 +13,8 @@ export default defineConfig({
     noExternal: ['@tailwindcss/vite']
   },
   server: {
+    // The live preview is proxied through a <port>-<sandboxId>.e2b.app hostname.
+    allowedHosts: ['.e2b.app'],
     proxy: {
       '/api': 'http://127.0.0.1:3001',
     },

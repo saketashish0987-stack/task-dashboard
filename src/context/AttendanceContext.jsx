@@ -1,11 +1,11 @@
 import React, { createContext, useCallback, useContext, useRef, useState } from 'react';
-import { createEmptyPeriod, addPerson as addPersonRule, applyEvent, canRoster as canRosterRule, generateAnonymousId, resetPeriod as resetPeriodRule } from '../features/attendance/attendanceRules.mjs';
+import { createEmptyPeriod, addPerson as addPersonRule, applyEvent, canRoster as canRosterRule, generateAnonymousId, resetPeriod as resetPeriodRule, undoLastEvent } from '../features/attendance/attendanceRules.mjs';
 import { deriveKeys, encryptData, decryptData } from '../features/attendance/crypto.mjs';
 
 // Everything here lives in memory only. Nothing is written to localStorage, so
 // closing the tab signs you out and leaves no readable data on the device.
 
-const AttendanceContext = createContext(null);
+export const AttendanceContext = createContext(null);
 export const useAttendanceContext = () => useContext(AttendanceContext);
 
 // In the Android app the page is served locally, so the API needs an absolute address.
@@ -122,9 +122,14 @@ export const AttendanceProvider = ({ children }) => {
     return id;
   }, [commit]);
 
-  const recordEvent = useCallback((id, type) => commit((p) => applyEvent(p, id, type)), [commit]);
+  const recordEvent = useCallback((id, type) => commit((p) => applyEvent(p, id, type, Date.now())), [commit]);
 
-  const resetPeriod = useCallback((label) => commit((p) => resetPeriodRule(p, label)), [commit]);
+  const undoLast = useCallback((id) => commit((p) => undoLastEvent(p, id)), [commit]);
+
+  const resetPeriod = useCallback(
+    (label) => commit((p) => resetPeriodRule(p, label, new Date().toISOString())),
+    [commit]
+  );
 
   const canRoster = useCallback((id) => canRosterRule(periodRef.current || createEmptyPeriod(), id), []);
 
@@ -152,6 +157,7 @@ export const AttendanceProvider = ({ children }) => {
         logout,
         addPerson,
         recordEvent,
+        undoLast,
         resetPeriod,
         canRoster,
         deleteAllData,

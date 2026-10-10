@@ -10,6 +10,7 @@ A task management application that allows users to create, organize, and filter 
 - **Task Tags**: Organize tasks with customizable tags
 - **Task Lists**: Create multiple lists with custom filters
 - **List Filters**: Filter tasks by tags or completion status
+- **Attendance**: Privacy-focused, anonymous no-show tracking with encrypted sync
 - **Animations**: Smooth transitions and animations using Framer Motion
 - **Responsive Design**: Works on desktop and mobile devices
 
@@ -70,6 +71,45 @@ The application supports pre-populating the app with sample data through an opti
   - `npm run build:hydrated` - Production build with sample data
   - `npm run build:clean` - Production build without sample data
 - GitHub Actions deployment automatically enables hydration for the production build
+
+## Attendance
+
+A privacy-focused attendance tracker. People are tracked by **anonymous IDs only**
+(e.g. `P-7F3A`) — no names or other personal data are ever stored.
+
+- Drop and pickup no-shows are tracked per person; **3 no-shows in a period** blocks
+  the person from rostering.
+- Every event is kept in a per-person log with a timestamp, can be reviewed in the
+  panel, and the most recent event can be **undone** (which can unblock a person
+  whose total falls back below the limit).
+- Starting a new period **archives the previous period** into a history of up to 12
+  completed periods with each person's final counts.
+- The current period can be **exported as CSV** (client-side; the file is never
+  uploaded).
+
+### Security model
+
+- Data is **encrypted in the browser** with a key derived from the user's password
+  (WebCrypto). The API server stores only opaque ciphertext and never sees
+  passwords, keys, or plaintext attendance data.
+- Sessions live in memory only (no localStorage): closing the tab signs you out.
+
+### Running the attendance API
+
+The Vite dev server proxies `/api` to `127.0.0.1:3001`, so start the API separately:
+
+```bash
+ATTENDANCE_INVITE_CODE=your-secret npm run server
+```
+
+| Env var | Description |
+| --- | --- |
+| `ATTENDANCE_INVITE_CODE` | Required for registration; registration is closed without it. |
+| `ATTENDANCE_DATA_DIR` | Where `users.json` is stored (default: `server/data`). |
+| `PORT` / `HOST` | Listen address (defaults: `3001` / `127.0.0.1`). |
+
+For the Android app (which serves the page locally), set `VITE_API_BASE` to the
+absolute API address instead of relying on the dev proxy.
 
 ## Architecture
 
